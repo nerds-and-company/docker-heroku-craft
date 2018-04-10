@@ -80,20 +80,20 @@ RUN curl -s https://s3.amazonaws.com/heroku-nodejs-bins/node/release/linux-x64/n
 RUN curl -s https://s3.amazonaws.com/heroku-nodejs-bins/yarn/release/yarn-v$YARN_VERSION.tar.gz | tar --strip-components=1 -xz -C /app/.heroku/node
 
 # copy dep files first so Docker caches the install step if they don't change
-COPY composer.lock /app/user/
-COPY composer.json /app/user/
+ONBUILD COPY composer.lock /app/user/
+ONBUILD COPY composer.json /app/user/
 # run install but without scripts as we don't have the app source yet
-RUN composer install --prefer-dist --no-scripts --no-suggest
+ONBUILD RUN composer install --prefer-dist --no-scripts --no-suggest
 # require the buildpack for execution
-RUN composer show heroku/heroku-buildpack-php || { echo 'Your composer.json must have "heroku/heroku-buildpack-php" as a "require-dev" dependency.'; exit 1; }
+ONBUILD RUN composer show heroku/heroku-buildpack-php || { echo 'Your composer.json must have "heroku/heroku-buildpack-php" as a "require-dev" dependency.'; exit 1; }
 
 # run npm or yarn install
 # add yarn.lock to .slugignore in your project
-COPY package*.json yarn.* /app/user/
-RUN [ -f yarn.lock ] && yarn install --no-progress || npm install
+ONBUILD COPY package*.json yarn.* /app/user/
+ONBUILD RUN [ -f yarn.lock ] && yarn install --no-progress || npm install
 
 # rest of app
-COPY . /app/user/
+ONBUILD COPY . /app/user/
 # run hooks
-RUN cat composer.json | python -c 'import sys,json; sys.exit("post-install-cmd" not in json.load(sys.stdin).get("scripts", {}));' && composer run-script post-install-cmd || true
-RUN cat composer.json | python -c 'import sys,json; sys.exit("post-autoload-dump" not in json.load(sys.stdin).get("scripts", {}));' && composer run-script post-autoload-dump || true
+ONBUILD RUN cat composer.json | python -c 'import sys,json; sys.exit("post-install-cmd" not in json.load(sys.stdin).get("scripts", {}));' && composer run-script post-install-cmd || true
+ONBUILD RUN cat composer.json | python -c 'import sys,json; sys.exit("post-autoload-dump" not in json.load(sys.stdin).get("scripts", {}));' && composer run-script post-autoload-dump || true
