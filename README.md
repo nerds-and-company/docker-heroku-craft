@@ -10,3 +10,5 @@ Usage: `FROM nerdsandcompany/docker-heroku-craft`
 * Composer
 * Node 8.x
 * Yarn
+* Chrome
+* ChromeDriver
