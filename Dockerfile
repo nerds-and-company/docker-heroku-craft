@@ -1,18 +1,18 @@
 # Inherit from Heroku's stack
 FROM heroku/heroku:18
-MAINTAINER Bob Olde Hampsink <b.oldehampsink@nerds.company>
+MAINTAINER Nerds & Company
 
 # Internally, we arbitrarily use port 3000
 ENV PORT 3000
 
 # Which versions?
-ENV PHP_VERSION 7.2.9
-ENV REDIS_EXT_VERSION 4.1.1
+ENV PHP_VERSION 7.3.0
+ENV REDIS_EXT_VERSION 4.2.0
 ENV IMAGICK_EXT_VERSION 3.4.3
-ENV HTTPD_VERSION 2.4.34
+ENV HTTPD_VERSION 2.4.37
 ENV NGINX_VERSION 1.8.1
-ENV NODE_ENGINE 8.11.4
-ENV COMPOSER_VERSION 1.7.2
+ENV NODE_ENGINE 8.14.0
+ENV COMPOSER_VERSION 1.8.0
 ENV YARN_VERSION 1.9.4
 
 # Create some needed directories
