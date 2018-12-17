@@ -70,6 +70,10 @@ extension=xmlrpc.so \n\
 extension=xsl.so\n\
 " >> /app/.heroku/php/etc/php/php.ini
 
+# Install xdebug (but don't enable) (Beta for php 7.3)
+RUN apt-get update && apt-get -y install gcc make autoconf libc-dev pkg-config
+RUN pecl install xdebug-beta
+
 # Install Composer
 RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/composer-$COMPOSER_VERSION.tar.gz | tar xz -C /app/.heroku/php
 
