@@ -4,6 +4,7 @@ MAINTAINER Nerds & Company
 
 # Internally, we arbitrarily use port 3000
 ENV PORT 3000
+ENV DEBIAN_FRONTEND noninteractive
 
 # Which versions?
 ENV PHP_VERSION 7.3.0
