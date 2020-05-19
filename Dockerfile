@@ -7,14 +7,14 @@ ENV PORT 3000
 ENV DEBIAN_FRONTEND noninteractive
 
 # Which versions?
-ENV PHP_VERSION 7.3.13
-ENV REDIS_EXT_VERSION 5.1.1
+ENV PHP_VERSION 7.4.5
+ENV REDIS_EXT_VERSION 5.2.2
 ENV IMAGICK_EXT_VERSION 3.4.4
 ENV HTTPD_VERSION 2.4.41
-ENV NGINX_VERSION 1.16.1
-ENV NODE_ENGINE 10.16.0
-ENV COMPOSER_VERSION 1.9.1
-ENV YARN_VERSION 1.21.1
+ENV NGINX_VERSION 1.18.0
+ENV NODE_ENGINE 14.2.0
+ENV COMPOSER_VERSION 1.10.5
+ENV YARN_VERSION 1.22.4
 
 # Create some needed directories
 RUN mkdir -p /app/.heroku/php /app/.heroku/node /app/.profile.d
@@ -46,8 +46,8 @@ RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-st
 # Config
 RUN mkdir -p /app/.heroku/php/etc/php/conf.d
 RUN curl --silent --location https://raw.githubusercontent.com/heroku/heroku-buildpack-php/5a770b914549cf2a897cbbaf379eb5adf410d464/conf/php/php.ini > /app/.heroku/php/etc/php/php.ini
-RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20180731/redis-$REDIS_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php
-RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20180731/imagick-$IMAGICK_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php
+RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20190902/redis-$REDIS_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php
+RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20190902/imagick-$IMAGICK_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php
 # Enable all optional exts
 RUN echo "\n\
 user_ini.cache_ttl = 30 \n\
@@ -72,8 +72,7 @@ extension=xsl.so\n\
 " >> /app/.heroku/php/etc/php/php.ini
 
 # Install xdebug (but don't enable) (Beta for php 7.3)
-RUN apt-get update && apt-get -y install gcc make autoconf libc-dev pkg-config
-RUN pecl install xdebug-beta
+RUN apt-get update && apt-get -y install gcc make autoconf libc-dev pkg-config php-xdebug
 
 # Install Composer
 RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/composer-$COMPOSER_VERSION.tar.gz | tar xz -C /app/.heroku/php
