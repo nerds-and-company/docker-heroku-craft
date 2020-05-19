@@ -6,9 +6,9 @@ Usage: `FROM nerdsandcompany/docker-heroku-craft`
 
 * Heroku 18
 * Apache & Nginx
-* PHP 7.3.x with Redis and Imagick
+* PHP 7.4.x with Redis and Imagick
 * Composer
-* Node 10.x
+* Node 14.x
 * Yarn
 * Chrome
 * ChromeDriver
