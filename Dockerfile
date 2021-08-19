@@ -102,7 +102,7 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 
 # copy dep files first so Docker caches the install step if they don't change
 ONBUILD COPY composer.lock /app/user/
-ONBUILD COPY composer.json /app/user/
+ONBUILD COPY composer.json plugins/* /app/user/
 # run install but without scripts as we don't have the app source yet
 ONBUILD RUN composer install --prefer-dist --no-scripts --no-suggest
 # require the buildpack for execution
@@ -117,3 +117,6 @@ ONBUILD COPY . /app/user/
 # run hooks
 ONBUILD RUN cat composer.json | python -c 'import sys,json; sys.exit("post-install-cmd" not in json.load(sys.stdin).get("scripts", {}));' && composer run-script post-install-cmd || true
 ONBUILD RUN cat composer.json | python -c 'import sys,json; sys.exit("post-autoload-dump" not in json.load(sys.stdin).get("scripts", {}));' && composer run-script post-autoload-dump || true
+
+# run composer install again to get local plugins installed properly
+ONBUILD RUN composer install
