@@ -1,5 +1,5 @@
 # Inherit from Heroku's stack
-FROM heroku/heroku:18
+FROM heroku/heroku:22
 MAINTAINER Nerds & Company
 
 # Internally, we arbitrarily use port 3000
@@ -7,13 +7,14 @@ ENV PORT 3000
 ENV DEBIAN_FRONTEND noninteractive
 
 # Which versions?
-ENV PHP_VERSION 7.4.5
-ENV REDIS_EXT_VERSION 5.2.1
-ENV IMAGICK_EXT_VERSION 3.4.4
-ENV HTTPD_VERSION 2.4.41
-ENV NGINX_VERSION 1.18.0
-ENV NODE_ENGINE 14.2.0
-ENV COMPOSER_VERSION 1.10.5
+# Possible php extension versions can be found with `aws s3 ls s3://lang-php --recursive |grep heroku-$HEROKU_PLATFORM_VERSION-stable`
+ENV HEROKU_PLATFORM_VERSION 22
+ENV PHP_VERSION 8.1.11
+ENV REDIS_EXT_VERSION 5.3.7
+ENV IMAGICK_EXT_VERSION 3.7.0
+ENV NGINX_VERSION 1.22.0
+ENV NODE_ENGINE 14.15.0
+ENV COMPOSER_VERSION 2.4.2
 ENV YARN_VERSION 1.22.4
 
 # Create some needed directories
@@ -23,17 +24,8 @@ WORKDIR /app/user
 # Locate our binaries
 ENV PATH /app/.heroku/php/bin:/app/.heroku/php/sbin:/app/.heroku/node/bin/:/app/user/node_modules/.bin:/app/user/vendor/bin:$PATH
 
-# Install Apache
-RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/apache-$HTTPD_VERSION.tar.gz | tar xz -C /app/.heroku/php
-# Config
-RUN curl --silent --location https://raw.githubusercontent.com/heroku/heroku-buildpack-php/5a770b914549cf2a897cbbaf379eb5adf410d464/conf/apache2/httpd.conf.default > /app/.heroku/php/etc/apache2/httpd.conf
-# FPM socket permissions workaround when run as root
-RUN echo "\n\
-Group root\n\
-" >> /app/.heroku/php/etc/apache2/httpd.conf
-
 # Install Nginx
-RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/nginx-$NGINX_VERSION.tar.gz | tar xz -C /app/.heroku/php
+RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-$HEROKU_PLATFORM_VERSION-stable/nginx-$NGINX_VERSION.tar.gz | tar xz -C /app/.heroku/php
 # Config
 RUN curl --silent --location https://raw.githubusercontent.com/heroku/heroku-buildpack-php/5a770b914549cf2a897cbbaf379eb5adf410d464/conf/nginx/nginx.conf.default > /app/.heroku/php/etc/nginx/nginx.conf
 # FPM socket permissions workaround when run as root
@@ -42,12 +34,12 @@ user nobody root;\n\
 " >> /app/.heroku/php/etc/nginx/nginx.conf
 
 # Install PHP
-RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/php-$PHP_VERSION.tar.gz | tar xz -C /app/.heroku/php
+RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-$HEROKU_PLATFORM_VERSION-stable/php-$PHP_VERSION.tar.gz | tar xz -C /app/.heroku/php
 # Config
 RUN mkdir -p /app/.heroku/php/etc/php/conf.d
 RUN curl --silent --location https://raw.githubusercontent.com/heroku/heroku-buildpack-php/5a770b914549cf2a897cbbaf379eb5adf410d464/conf/php/php.ini > /app/.heroku/php/etc/php/php.ini
-RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20190902/redis-$REDIS_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php
-RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/extensions/no-debug-non-zts-20190902/imagick-$IMAGICK_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php
+RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-$HEROKU_PLATFORM_VERSION-stable/extensions/no-debug-non-zts-20210902/redis-$REDIS_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php
+RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-$HEROKU_PLATFORM_VERSION-stable/extensions/no-debug-non-zts-20210902/imagick-$IMAGICK_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php
 # Enable all optional exts
 RUN echo "\n\
 user_ini.cache_ttl = 30 \n\
@@ -67,7 +59,6 @@ extension=shmop.so \n\
 extension=soap.so \n\
 extension=sqlite3.so \n\
 extension=pdo_sqlite.so \n\
-extension=xmlrpc.so \n\
 extension=xsl.so\n\
 " >> /app/.heroku/php/etc/php/php.ini
 
@@ -75,10 +66,13 @@ extension=xsl.so\n\
 RUN apt-get update && apt-get -y install gcc make autoconf libc-dev pkg-config php-xdebug
 
 # Install Composer
-RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-18-stable/composer-$COMPOSER_VERSION.tar.gz | tar xz -C /app/.heroku/php
+RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-$HEROKU_PLATFORM_VERSION-stable/composer-$COMPOSER_VERSION.tar.gz | tar xz -C /app/.heroku/php
 
 # Install Node
-RUN curl --silent --location https://s3pository.heroku.com/node/v$NODE_ENGINE/node-v$NODE_ENGINE-linux-x64.tar.gz | tar --strip-components=1 -xz -C /app/.heroku/node
+RUN curl --silent --location https://nodejs.org/dist/v$NODE_ENGINE/node-v$NODE_ENGINE-linux-x64.tar.gz | tar --strip-components=1 -xz -C /app/.heroku/node
+
+# Install build-essential for node-gyp issues
+RUN apt-get install -y build-essential
 
 # Install Yarn
 RUN curl --silent --location https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz | tar --strip-components=1 -xz -C /app/.heroku/node

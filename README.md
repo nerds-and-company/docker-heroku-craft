@@ -4,9 +4,9 @@ Usage: `FROM nerdsandcompany/docker-heroku-craft`
 
 ## Specifications
 
-* Heroku 18
-* Apache & Nginx
-* PHP 7.4.x with Redis and Imagick
+* Heroku 22
+* Nginx
+* PHP 8.1.x with Redis and Imagick
 * Composer
 * Node 14.x
 * Yarn
