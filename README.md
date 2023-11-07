@@ -8,7 +8,7 @@ Usage: `FROM nerdsandcompany/docker-heroku-craft`
 * Nginx
 * PHP 8.1.x with Redis and Imagick
 * Composer
-* Node 14.x
+* Node 18.x
 * Yarn
 * Chrome
 * ChromeDriver
