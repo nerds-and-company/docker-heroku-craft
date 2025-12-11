@@ -2,24 +2,24 @@ ARG HEROKU_PLATFORM_VERSION=24
 
 # Inherit from Heroku's stack
 FROM heroku/heroku:${HEROKU_PLATFORM_VERSION}
-MAINTAINER Nerds & Company
+LABEL org.opencontainers.image.authors="Nerds & Company"
 
 USER root
 
 # Internally, we arbitrarily use port 3000
-ENV PORT 3000
-ENV DEBIAN_FRONTEND noninteractive
+ENV PORT=3000
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Which versions?
 # Possible php extension versions can be found with `aws s3 ls s3://lang-php --recursive |grep heroku-$HEROKU_PLATFORM_VERSION-stable`
 ARG HEROKU_PLATFORM_VERSION
-ENV PHP_VERSION 8.3.9
-ENV REDIS_EXT_VERSION 6.2.0
-ENV IMAGICK_EXT_VERSION 3.7.0
-ENV NGINX_VERSION 1.24.0
-ENV NODE_ENGINE 18.20.0
-ENV COMPOSER_VERSION 2.8.8
-ENV YARN_VERSION 1.22.4
+ENV PHP_VERSION=8.4.15
+ENV REDIS_EXT_VERSION=6.2.0
+ENV IMAGICK_EXT_VERSION=3.7.0
+ENV NGINX_VERSION=1.24.0
+ENV NODE_ENGINE=18.20.0
+ENV COMPOSER_VERSION=2.8.8
+ENV YARN_VERSION=1.22.4
 
 # Create some needed directories
 RUN mkdir -p /app/.heroku/php /app/.heroku/node /app/.profile.d
@@ -27,7 +27,7 @@ RUN mkdir -p /app/.heroku/php /app/.heroku/node /app/.profile.d
 WORKDIR /app/user
 
 # Locate our binaries
-ENV PATH /app/.heroku/php/bin:/app/.heroku/php/sbin:/app/.heroku/node/bin/:/app/user/node_modules/.bin:/app/user/vendor/bin:$PATH
+ENV PATH=/app/.heroku/php/bin:/app/.heroku/php/sbin:/app/.heroku/node/bin/:/app/user/node_modules/.bin:/app/user/vendor/bin:$PATH
 
 # Install Nginx
 RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-$HEROKU_PLATFORM_VERSION-amd64-stable/nginx-$NGINX_VERSION.tar.gz | tar xz -C /app/.heroku/php
@@ -43,8 +43,9 @@ RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-$HERO
 # Config
 RUN mkdir -p /app/.heroku/php/etc/php/conf.d
 RUN curl --silent --location https://raw.githubusercontent.com/heroku/heroku-buildpack-php/5a770b914549cf2a897cbbaf379eb5adf410d464/conf/php/php.ini > /app/.heroku/php/etc/php/php.ini
-RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-$HEROKU_PLATFORM_VERSION-amd64-stable/extensions/no-debug-non-zts-20230831/redis-$REDIS_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php
-RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-$HEROKU_PLATFORM_VERSION-amd64-stable/extensions/no-debug-non-zts-20230831/imagick-$IMAGICK_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php
+RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-$HEROKU_PLATFORM_VERSION-amd64-stable/extensions/no-debug-non-zts-20240924/redis-$REDIS_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php
+RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-$HEROKU_PLATFORM_VERSION-amd64-stable/extensions/no-debug-non-zts-20240924/imagick-$IMAGICK_EXT_VERSION.tar.gz | tar xz -C /app/.heroku/php
+
 # Enable all optional exts
 RUN echo "\n\
 user_ini.cache_ttl = 30 \n\
