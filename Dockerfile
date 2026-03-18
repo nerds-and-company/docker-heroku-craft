@@ -13,7 +13,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Which versions?
 # Possible php extension versions can be found with `aws s3 ls s3://lang-php --recursive |grep heroku-$HEROKU_PLATFORM_VERSION-stable`
 ARG HEROKU_PLATFORM_VERSION
-ENV PHP_VERSION=8.4.15
+ENV PHP_VERSION=8.4.19
 ENV REDIS_EXT_VERSION=6.2.0
 ENV IMAGICK_EXT_VERSION=3.7.0
 ENV NGINX_VERSION=1.24.0
