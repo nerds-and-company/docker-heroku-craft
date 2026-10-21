@@ -84,10 +84,6 @@ RUN apt-get install -y build-essential
 # Install Yarn
 RUN curl --silent --location https://yarnpkg.com/downloads/$YARN_VERSION/yarn-v$YARN_VERSION.tar.gz | tar --strip-components=1 -xz -C /app/.heroku/node
 
-# Install Google Chrome and Chrome WebDriver
-RUN npm install -g @puppeteer/browsers
-RUN npx @puppeteer/browsers install chrome@stable
-
 # copy dep files first so Docker caches the install step if they don't change
 ONBUILD COPY composer.lock /app/user/
 ONBUILD COPY composer.json /app/user/
