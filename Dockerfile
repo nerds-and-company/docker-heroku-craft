@@ -13,11 +13,11 @@ ENV DEBIAN_FRONTEND noninteractive
 # Which versions?
 # Possible php extension versions can be found with `aws s3 ls s3://lang-php --recursive |grep heroku-$HEROKU_PLATFORM_VERSION-stable`
 ARG HEROKU_PLATFORM_VERSION
-ENV PHP_VERSION 8.3.9
+ENV PHP_VERSION 8.3.36
 ENV REDIS_EXT_VERSION 6.2.0
 ENV IMAGICK_EXT_VERSION 3.7.0
 ENV NGINX_VERSION 1.24.0
-ENV NODE_ENGINE 18.20.0
+ENV NODE_ENGINE 20.19.0
 ENV COMPOSER_VERSION 2.8.8
 ENV YARN_VERSION 1.22.4
 
@@ -39,7 +39,7 @@ user nobody root;\n\
 " >> /app/.heroku/php/etc/nginx/nginx.conf
 
 # Install PHP
-RUN curl --silent --location https://lang-php.s3.amazonaws.com/dist-heroku-$HEROKU_PLATFORM_VERSION-amd64-stable/php-$PHP_VERSION.tar.gz | tar xz -C /app/.heroku/php
+RUN curl --silent --location  https://heroku-buildpack-php.s3.dualstack.us-east-1.amazonaws.com/dist-heroku-$HEROKU_PLATFORM_VERSION-amd64-stable/php-$PHP_VERSION.tar.gz | tar xz -C /app/.heroku/php
 # Config
 RUN mkdir -p /app/.heroku/php/etc/php/conf.d
 RUN curl --silent --location https://raw.githubusercontent.com/heroku/heroku-buildpack-php/5a770b914549cf2a897cbbaf379eb5adf410d464/conf/php/php.ini > /app/.heroku/php/etc/php/php.ini
